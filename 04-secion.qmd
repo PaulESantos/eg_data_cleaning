@@ -1,0 +1,30 @@
+
+## Limpieza paso a paso - Etapa 1
+
+- Importa tus datos de manera limpia: omite filas, obtén encabezados.
+- Explora tus datos.
+- Elimina filas y columnas vacías.
+- Ajusta las clases/tipos de variables, verifica las fechas.
+- Limpia los nombres de las variables.
+- Crea un libro de códigos.
+- Valida la presencia de valores faltantes y valores atípicos.
+- Corrige los valores incorrectos de las categorías.
+- Identifica y etiqueta consistentemente los valores faltantes.
+- Separa los valores mezclados (SBP/DBP) y asigna etiquetas a las variables.
+
+## Limpieza paso a paso - Etapa 2 Manipulación de datos
+
+- Deja que tu pregunta defina tu unidad de análisis.
+- Utiliza "pivot_longer" o "pivot_wider" si es necesario.
+- Ajusta el tiempo, completa los tiempos faltantes si es necesario.
+- Combina datos adicionales si es necesario.
+- Conoce qué paquetes utilizar para los problemas de datos.
+  - unpivotr
+  - tidyxl
+  - unheadr
+
+## ¡Gracias!
+
+
+<br>
+

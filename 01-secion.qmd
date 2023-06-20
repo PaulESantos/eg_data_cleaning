@@ -1,0 +1,698 @@
+
+```{r font-awesome-color}
+#| echo: false
+
+# fill for font awesome icons
+fa_fill <- "#7090A5"
+
+```
+
+# Principios de Gestión de Datos
+
+## Historias de terror con datos
+
+::: {.r-stack}
+![](images/messy_spreadsheet1.PNG){.fragment width="850" height="550"}
+
+![](images/messy_spreadsheet2.PNG){.fragment width="650" height="450"}
+
+![](images/messy_spreadsheet3.PNG){.fragment width="550" height="250"}
+:::
+
+
+## Historias de terror con datos
+
+![](images/disappointment.png){fig-align="center" width=90%}
+
+::: footer  
+By knowyourmeme.com
+:::  
+
+
+## Principios de Organización de Datos
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Estructura de los datos
+- Valores de las variables
+
+:::
+
+::: {.column width="50%"}
+
+- Tipos de variables
+- Datos faltantes
+
+:::
+
+::::
+
+![](images/messy_data.PNG)
+
+ 
+## Estructura de los datos
+
+1. Los datos deben formar un rectángulo de filas y columnas.
+    - Debes tener el número esperado de filas (casos en tus datos).
+    - Debes tener el número esperado de columnas (variables en tus datos).
+
+
+![](images/row_col.PNG){fig-align="center"}
+
+
+## Estructura de los datos
+
+2. Los nombres de las variables deben estar en la primera, y **solo** la primera fila de tus datos.
+    - También deben seguir guías prácticas para nombrar las variables.
+    - Los nombres de las variables deben:
+      - Ser únicos.
+      - Ser significativos (`género` en lugar de `X1`).
+      - No incluir espacios.
+      - No incluir caracteres especiales, excepto `_`.
+        - Entonces, no se permiten `/`, `-`, `!`, `"`
+      - No empezar con un número o carácter especial.
+
+
+
+## Preguntas:
+
+¿Qué problemas de estructura de datos notas en nuestros datos de muestra?
+
+
+![](images/messy_data.PNG){fig-align="center"}
+
+```{r}
+#| echo: false
+#| cache: false
+countdown(minutes = 1, font_size = "1em")
+```
+
+
+## Estructura de los datos
+
+- Los nombres de las variables no están en la primera fila de los datos
+- Nuestros datos no forman un rectángulo - Columna vacía, filas vacías
+- Los nombres de las variables no siguen las mejores prácticas
+
+
+![](images/structure.PNG){fig-align="center"}
+
+## Valores de las variables
+
+1. Los valores deben ser explícitos, no implícitos
+    - Si se da a entender que una celda en blanco es cero, completa esa celda con un cero real
+    - No se debe utilizar la codificación de colores para indicar información. Crea una nueva variable.
+
+. . . 
+
+2. Los valores deben ser analizables. Esto significa que no se debe capturar más de una medida en una variable.
+
+## Valores de las variables
+
+3. Las variables deben ser capturadas de manera consistente dentro de una columna
+    - Las fechas deben ser capturadas de manera consistente (es decir, [AAAA-MM-DD](https://www.iso.org/iso-8601-date-and-time-format.html))
+    - Las categorías deben ser capturadas de manera consistente (tanto en ortografía como en mayúsculas y minúsculas)
+    - Si la variable es numérica, los valores deben estar dentro del rango esperado
+
+
+## Preguntas:
+
+
+¿Qué problemas de valores de variables notas en nuestros datos de muestra?
+
+
+![](images/messy_data.PNG){fig-align="center"}
+
+```{r}
+#| echo: false
+#| cache: false
+countdown(minutes = 1, font_size = "1em")
+```
+
+## Valores de Variables
+
+- El uso de colores indica información
+- Dos cosas medidas en una columna
+- Valores categóricos capturados de manera inconsistente
+
+
+
+![](images/values.PNG){fig-align="center"}
+
+## Tipos de Variables
+
+Las variables deben almacenarse como el tipo esperado (o en términos de R, `class`)
+
+. . .
+
+1. **Numérico**
+    - Contiene valores numéricos (14.5, 14.539, 789, -24)
+    - Las variables numéricas no pueden contener caracteres especiales, espacios ni letras
+      - 100mg
+      - 83/150
+      - " 89"
+
+## Tipos de Variables
+
+2. **Fecha, Hora, Fecha-Hora**
+    - Representadas en R como `<fecha>`, `<hora>` o `<dttm>`/`<POSIXct>`
+    - Te permiten realizar cálculos con fechas
+
+
+## Tipos de Variables
+
+3. **Carácter**
+    - Contiene valores de caracteres o cadenas ("kg", "R en Medicina", "11.5", "5mg")
+          
+. . .
+
+4. **Factor**
+    - Una clase especial de variables, útil cuando se trabaja con variables categóricas u ordinales
+    - Los factores asignan un orden a los grupos de variables
+    - Debes asignar esta clase a tus variables
+    - Puedes obtener más información sobre cómo trabajar con factores en este artículo: [Manipulación de Datos Categóricos en R](https://peerj.com/preprints/3163/)
+
+
+## Preguntas
+
+¿Cuál es la clase de R para las siguientes variables?
+
+::: panel-tabset
+
+### var1
+
+::: {.fragment}
+```{r}
+#| echo: false
+
+var1 <- c(" 7.5", "2", "3.6")
+
+var1
+
+```
+
+:::
+<br>
+
+::: {.fragment}
+```{r}
+
+class(var1)
+
+```
+
+:::
+
+
+### var2
+
+::: {.fragment}
+```{r}
+#| echo: false
+
+var2 <- c("medium", "medium", "low", "high", "low")
+
+var2 <- factor(var2, levels = c("low", "medium", "high"))
+
+var2
+
+```
+
+:::
+<br>
+
+::: {.fragment}
+```{r}
+class(var2)
+
+```
+
+:::
+
+### var3
+
+::: {.fragment}
+```{r}
+#| echo: false
+
+var3 <- c("50kg", "59kg", "82kg")
+
+var3
+
+```
+
+:::
+<br>
+
+::: {.fragment}
+```{r}
+
+class(var3)
+
+```
+
+:::
+:::
+
+## Preguntas
+
+¿Qué problemas de tipo de variable notas en nuestros datos de muestra?
+
+![](images/type_clean.PNG){fig-align="center" width=80% height=80%}
+
+```{r}
+#| echo: false
+#| cache: false
+countdown(minutes = 1, font_size = "1em")
+```
+
+## Tipos de variables
+
+- Fechas almacenadas como números
+- Texto almacenado en variables numéricas
+
+![](images/type.PNG){fig-align="center"}
+
+
+## Datos faltantes
+
+1. Los datos faltantes deben aparecer como se espera
+    - La cantidad de datos faltantes
+    - Las variables/casos para los cuales faltan datos
+
+. . .
+
+2. Utiliza valores consistentes para indicar respuestas faltantes (en blanco, NA, -999)
+    - Documenta tu decisión
+    - Los valores faltantes deben coincidir con el tipo de variable
+      - Es decir, no uses "sin respuesta" en una variable numérica
+      
+
+## Preguntas
+
+¿Qué problemas de datos faltantes notas en nuestros datos de muestra?
+
+![](images/missing_clean.PNG){fig-align="center" width=75% height=70%}
+
+```{r}
+#| echo: false
+#| cache: false
+countdown(minutes = 1, font_size = "1em")
+```
+    
+## Datos faltantes
+
+- Datos faltantes inesperados
+- Valores faltantes inconsistentes utilizados
+- Valores faltantes que no coinciden con el tipo de variable
+
+![](images/missing.PNG){fig-align="center"}
+
+
+## Reducción de errores
+
+La forma número uno de reducir los errores de datos es hacer un plan antes de recopilar los datos.
+
+> Corrige los datos en la fuente
+
+<br>
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Planifica las variables que deseas recopilar
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Construye tus herramientas de recopilación/ingreso de datos de acuerdo a tu plan
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Prueba tus herramientas de datos antes de recopilar/ingresar datos
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Verifica tus datos con frecuencia durante la recopilación/ingreso de datos
+
+
+
+## Planifica las variables que deseas recopilar
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Es necesario planificar**
+
+- Nombre de la variable
+- Las etiquetas de la variables.
+- Tipo de variables
+- Valores/rangos permitidos
+- Valores faltantes
+
+:::
+
+::: {.column width="50%"}
+
+**Se recomendado planificar**
+
+- La identificación del posible universo de las variables
+
+:::
+
+::::
+
+
+## Diccionario de datos
+
+<br>
+
+```{r dictionary}
+#| echo: false
+
+library(tidyverse)
+library(gt)
+
+dict <- tribble(~var_name, ~label, ~type, ~values, ~missing_values,
+                "pat_id", "Patient Identifier",
+                "character", "001-030", NA,
+                "treatment", "Treatment for UC", "character", "upa; uste; oza", NA,
+                "start_date", "Date of start of treatment",
+                "date", "YYYY-MM-DD", NA,
+                "ethnic", "Ethnicity - hispanic or not hispanic",
+                "character", "hispanic; not hispanic", "missing",
+                "start_mes", "Mayo endoscopic Score at start of treatment", "numeric", "0-3", "-99")
+
+gt::gt(dict)
+
+```
+
+
+## Herramientas para la gestion de datos
+
+- Excel (`xlsx`)
+- Conoce las fortalezas y limitaciones de tu herramienta
+  - Considera aspectos como el control de versiones y validación.
+  
+  
+  
+## Organiza tus datos con base en tu diccionario de datos
+
+. . . 
+
+<br>
+
+`r fontawesome::fa("check", fill = fa_fill)` Nombra tus variables correctamente
+
+- En lugar de Q1, Q2, Q3 -> id, fecha_inicio, tratamiento
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Crea elementos que acepten solo valores permitidos
+
+-   Solo dentro de un rango especificado (0-50)
+-   Solo dentro de categorías especificadas ("hispano", "no hispano")
+
+. . .
+
+`r fontawesome::fa("check", fill = fa_fill)` Crea elementos que acepten solo tipos de variable especificados
+
+-   Solo valores numéricos
+-   Solo fechas en formato AAAA-MM-DD
+
+## Prueba tu herramienta de recopilación o ingreso de datos
+
+- Recopila/ingresa datos de muestra
+  - ¿Falta algún elemento?
+  - ¿Revisa la ocurrencia de valores inesperados?
+    - Valores fuera de rango
+    - Formatos incorrectos
+    - Entradas inconsistentes
+      - "m", "male", "Male", "MALE"
+ 
+## Revisa tus datos con frecuencia durante la recopilación
+
+1. Valida tus datos según tus expectativas
+    - [`pointblank`](https://rich-iannone.github.io/pointblank/)
+    - [`assertr`](https://docs.ropensci.org/assertr/)
+    - [`validate`](https://github.com/data-cleaning/validate)
+ 
+## `pointblank` report
+
+::: panel-tabset
+
+## Codigo
+
+```{r}
+#| echo: false
+
+library(tidyverse)
+  
+df_raw <- readxl::read_excel("../data/messy_uc.xlsx", sheet = "Data", skip = 5) |>
+  filter(!is.na(pat_id)) |>
+  slice_head(n=10) |>
+  select(pat_id:dob, start_bp, start_mes)
+
+```
+
+```{r}
+#| eval: false
+
+library(pointblank)
+
+# Importar
+
+df_raw <- readxl::read_excel("data/mydata.csv")
+
+# Verificar mis suposiciones
+
+create_agent(df_raw) |>
+  rows_distinct(columns = vars(pat_id)) |>
+  col_vals_not_null(columns = vars(pat_id)) |>
+  col_is_date(columns = vars(start_date)) |>
+  col_is_numeric(columns = vars(start_mes)) |>
+  col_vals_in_set(columns = vars(treatment), set = c("upa", "uste", "oza")) |>
+  col_vals_in_set(columns = vars(ethnic), set = c("hispanic", "not hispanic")) |>
+  col_vals_between(columns = vars(start_mes), left = 0, right = 3, na_pass = FALSE) |>
+  interrogate()
+
+```
+
+## Reporte
+
+![](images/pointblank.PNG){fig-align="center" width=80% height=90%}
+
+:::
+
+## Revisa tus datos con frecuencia durante la recolección
+
+2. Crea un cuaderno de notas
+   
+    - `codebookr`
+    - `codebook`
+    - `memisc`
+    - `sjPlot`
+    
+
+## `codebookr` codebook
+
+::: panel-tabset
+
+## Codigo
+
+```{r}
+#| eval: false
+
+library(codebookr)
+
+# Importar
+
+df_raw <- readxl::read_excel("data/mydata.csv")
+
+# Crea un codebook - cuaderno de notas
+
+df_codebook <- codebook(df_raw)
+
+print(df_codebook,"my_codebookr_codebook.docx")
+
+```
+
+## Codebook
+
+![](images/codebook.PNG){fig-align="center" width=85%}
+
+
+:::
+
+
+# Limpieza de Datos
+
+
+> Todas las prácticas que acabamos de cubrir se realizan en un mundo ideal, donde tenemos autonomía sobre cómo se recopilan los datos. Pero obviamente seguirán habiendo situaciones en las que te entreguen datos sobre los cuales no tuviste control sobre el proceso de recopilación/ingreso.
+
+
+> O tal vez, incluso si recopilaste tus propios datos, a pesar de tus mejores esfuerzos por recopilar/ingresar datos limpios, aún terminaste con datos que contienen errores.
+
+
+## Importar archivos a R
+
+- Vamos a utilizar la función `read_excel()` del paquete `readxl`
+
+- Hay varios argumentos a considerar al usar esta función
+  - path
+  - sheet = NULL
+  - col_names = TRUE
+  - na = " "
+  - skip = 0
+
+- Escribe `?read_excel` en tu consola para ver más argumentos
+
+## Importar archivos a R
+
+
+::: panel-tabset
+
+## Script
+
+![](images/script2.PNG){width=80%}
+
+## Codigo
+
+```{r, error = TRUE, eval = FALSE}
+ 
+library(readxl)
+
+# Importar
+
+df_raw <- readxl::read_excel("data/messy_uc.xlsx",
+  sheet = "__", 
+  skip = __
+)
+
+```
+
+
+## Importar datos a R
+
+
+```{r}
+#| echo: false
+ 
+library(readxl)
+
+df_raw <- read_excel("../data/messy_uc.xlsx",
+  sheet = "Data", skip = 6
+)
+
+```
+
+```{r}
+#| echo: false
+
+df_raw |>
+  slice(1:10) |>
+  select(pat_id:start_mes) |>
+  gt::gt()
+
+```
+
+:::
+
+
+
+## Revisión de los datos
+
+> El EDA (Exploratory data analysis) no es un proceso formal con un conjunto estricto de reglas. Más que nada, el EDA es un estado mental. Durante las fases iniciales del EDA, debes sentirte libre de investigar cada idea que se te ocurra.
+*- R for Data Science*
+
+
+## Revisión de los datos
+<br>
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+Conoce tus datos
+
+  - ¿Cuántas filas? ¿Cuántas columnas?
+  - ¿Cuáles son los tipos de variables?
+  - ¿Cuáles son los valores de las variables?
+  - ¿Cuántos datos faltantes hay?
+  - ¿Cómo se relacionan las variables?
+
+:::
+
+::: {.column width="10%"}
+
+:::
+
+::: {.column width="50%"}
+
+Existen varias funciones que se pueden utilizar para explorar los datos
+
+- `dplyr::glimpse()`
+- `skimr::skim()`
+- `base::summary()`
+- `visdat:vis_dat()`
+- `summarytools::dfSummary()`
+- `DataExplorer::create_report()`
+- `Hmisc::describe()`
+
+:::
+
+::::
+
+
+## `summarytools::dfSummary()`
+
+::: panel-tabset
+
+## Codigo
+
+```{r}
+#| eval: false
+
+library(summarytools)
+
+# Revisión de los datos
+
+dfSummary(df_raw)
+
+```
+
+
+## Resultado
+
+![](images/exploratory1.PNG){width=50%}![](images/exploratory2.PNG){width=50% height=90%}
+
+:::
+
+## `skimr::skim()`
+
+::: panel-tabset
+
+## Codigo
+
+```{r}
+#| eval: false
+
+library(skimr)
+
+# Revisión de los datos
+
+skim(df_raw)
+
+```
+
+## Resultado
+
+![](images/skimr.PNG){width=90%}
+
+:::
+

@@ -7,3 +7,5 @@
 _site/
 docs/
 .html
+index_cache
+index_files

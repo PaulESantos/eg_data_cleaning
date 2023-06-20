@@ -1,0 +1,592 @@
+# Etapa 1<br> Limpieza de datos
+```{r}
+#| echo: false
+#| message: false
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(here)
+library(gtsummary)
+library(countdown)
+```
+
+```{r}
+#| echo: false
+df_raw <- read_excel(
+  path = here("data", "messy_uc.xlsx"),
+  sheet = "Data",
+  skip = 5
+)
+```
+
+## Nombres de las variables
+
+Nombres originales de variables en Excel:
+
+![](images/var_names_1.PNG)
+
+. . .
+
+<br>
+
+Los nombres de variables se importan como se muestra, con modificaciones de `readxl::read_excel()` para garantizar que estos sean únicos:
+
+![](images/var_names_2.PNG)
+
+## Nombres de variables, más limpios
+
+
+![](images/var_names_2.PNG)
+
+. . .
+
+<br>
+
+La función `janitor::clean_names()` elimina los caracteres especiales e implementa el estilo **snake case** como estilo predeterminado:
+
+```{r}
+df_clean <- df_raw |> 
+  janitor::clean_names() 
+```
+
+![](images/var_names_3.PNG)
+
+## Eliminar columnas o filas vacías
+
+::: panel-tabset
+### Problema
+
+```{r}
+#| eval: true
+df_clean |> 
+  select(pat_id, race:start_bp) |> 
+  slice(13:18)
+```
+
+### Solución
+
+```{r}
+#| eval: true
+#| code-line-numbers: "3"
+df_clean <- df_raw |> 
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols"))
+```
+
+<br>
+
+```{r}
+df_clean |> 
+  select(pat_id, race:start_bp) |> 
+  slice(13:18)
+```
+
+### Revisión
+
+::: columns
+::: {.column width="35%"}
+```{r}
+#
+df_raw |>
+  janitor::clean_names() |> 
+  glimpse()
+```
+:::
+
+::: {.column width="65%"}
+```{r}
+df_raw |> 
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  glimpse()
+```
+:::
+:::
+:::
+
+## Recodificación
+
+::: panel-tabset
+### Problema
+
+```{r}
+df_clean |> 
+  count(ethnic)
+```
+
+### Solución
+
+```{r}
+#| code-line-numbers: 4-9
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+      .default = ethnic
+    )
+  )
+
+df_clean |> 
+  count(ethnic_clean)
+```
+
+### Revisión
+
+```{r}
+df_clean |> 
+  count(ethnic_clean, ethnic)
+```
+:::
+
+## Reemplazar valores por valores faltantes
+
+
+::: panel-tabset
+### Problema
+
+::: columns
+::: {.column width="50%"}
+
+- Valores inconsistentes o atípicos
+
+```{r}
+df_clean |> 
+  count(end_na) 
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  ggplot(aes(x = end_na)) +
+  geom_histogram()
+```
+:::
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "9"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ),
+    end_na_clean = na_if(end_na, -99)
+  ) 
+```
+
+### Revisión
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  count(end_na, end_na_clean) 
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  ggplot(aes(x = end_na_clean)) +
+  geom_histogram()
+```
+:::
+:::
+:::
+
+## Tipo de variable incorrecto
+
+::: panel-tabset
+### Problema
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_raw |> 
+  select(end_emo) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, warning = TRUE}
+mean(df_raw[["end_emo"]], na.rm = TRUE)
+```
+:::
+:::
+
+::: {.column .fragment width="50%"}
+```{r}
+df_raw[["end_emo"]]
+```
+:::
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "10"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ),
+    end_na_clean = na_if(end_na, -99),
+    end_emo_clean = na_if(end_emo, "not done") |> as.numeric()
+  ) 
+```
+
+### Revisión
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  select(end_emo, end_emo_clean) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, error=TRUE}
+mean(df_clean[["end_emo_clean"]], na.rm = TRUE)
+```
+:::
+:::
+
+::: {.column .fragment width="50%"}
+```{r}
+df_clean |> 
+  count(end_emo_clean, end_emo)
+```
+:::
+:::
+:::
+
+## Fechas
+
+::: panel-tabset
+### Problema
+
+```{r}
+df_raw |> 
+  select(start_date) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r}
+df_raw[["start_date"]]
+```
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "11"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ),
+    end_na_clean = na_if(end_na, -99),
+    end_emo_clean = na_if(end_emo, "not done") |> as.numeric(),
+    start_date_clean = janitor::convert_to_date(start_date)
+  ) 
+```
+
+### Revisión
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  select(start_date, start_date_clean) |> 
+  glimpse()
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  count(start_date, start_date_clean) 
+```
+:::
+:::
+:::
+
+## Separando valores numéricos y texto
+
+::: panel-tabset
+### Problema
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_raw |> 
+  select(start_na) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, warning = TRUE}
+mean(df_raw[["start_na"]], na.rm = TRUE)
+```
+:::
+:::
+
+::: {.column .fragment width="50%"}
+```{r}
+df_raw[["start_na"]]
+```
+:::
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "11"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ),
+    end_na_clean = na_if(end_na, -99),
+    end_emo_clean = na_if(end_emo, "not done") |> as.numeric(),
+    start_na_clean = parse_number(start_na)
+  ) 
+```
+
+### Revisión
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  select(start_na, start_na_clean) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, error=TRUE}
+mean(df_clean[["start_na_clean"]], na.rm = TRUE)
+```
+:::
+:::
+
+::: {.column .fragment width="50%"}
+```{r}
+df_clean |> 
+  count(start_na_clean, start_na)
+```
+:::
+:::
+:::
+
+
+## Variable de  tipo carácter como factor
+
+::: panel-tabset
+### Problema
+
+::: columns
+::: {.column width="35%"}
+```{r}
+df_clean |> 
+  count(treatment)
+```
+
+<br>
+
+::: fragment
+```{r}
+df_clean |> 
+  count(ethnic_clean)
+```
+:::
+:::
+
+::: {.column .fragment width="65%"}
+```{r}
+df_clean |> 
+  select(treatment, ethnic_clean) |> 
+  glimpse()
+```
+
+::: fragment
+```{r}
+df_clean |> 
+  select(treatment, ethnic_clean) |> 
+  gtsummary::tbl_summary(by = treatment)
+```
+:::
+:::
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "8,12"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ) |> fct_infreq(),
+    end_na_clean = na_if(end_na, -99),
+    end_emo_clean = na_if(end_emo, "not done") |> as.numeric(),
+    start_na_clean = parse_number(start_na),
+    treatment = fct_relevel(treatment, "upa", "uste", "oza")
+  ) 
+```
+
+<br>
+
+
+Consulta el paquete [forcats](https://forcats.tidyverse.org/) para otras soluciones de manipulación de factores.
+
+
+### Revisión
+
+::: columns
+::: {.column width="35%"}
+```{r}
+df_clean |> 
+  count(treatment)
+```
+
+<br>
+
+::: fragment
+```{r}
+df_clean |> 
+  count(ethnic_clean)
+```
+:::
+:::
+
+::: {.column .fragment width="65%"}
+```{r}
+df_clean |> 
+  select(treatment, ethnic_clean) |> 
+  glimpse()
+```
+
+::: fragment
+```{r}
+df_clean |> 
+  select(treatment, ethnic_clean) |> 
+  gtsummary::tbl_summary(by = treatment)
+```
+:::
+:::
+:::
+:::
+
+
+## Separación de valores
+
+::: panel-tabset
+### Problema
+
+```{r}
+df_clean |> 
+  select(start_bp) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, error=TRUE}
+mean(df_clean[["start_bp"]], na.rm = TRUE)
+```
+:::
+
+<br>
+
+::: fragment
+```{r}
+df_clean[["start_bp"]]
+```
+:::
+
+### Solución
+
+```{r}
+#| code-line-numbers: "14,15"
+df_clean <- df_raw |>
+  janitor::clean_names() |> 
+  janitor::remove_empty(which = c("rows", "cols")) |> 
+  mutate(
+    ethnic_clean = case_when(
+      ethnic %in%  c("hispanic", "Hispanic", "hispamnic") ~ "hispanic",
+      ethnic %in%  c("NOT hispanic", "not hispanic") ~ "not hispanic",
+    ) |> fct_infreq(),
+    end_na_clean = na_if(end_na, -99),
+    end_emo_clean = na_if(end_emo, "not done") |> as.numeric(),
+    start_na_clean = parse_number(start_na),
+    treatment = fct_relevel(treatment, "upa", "uste", "oza")
+    ) |>  
+  separate_wider_delim(start_bp, delim ="/", names = c("bp_systolic", "bp_diastolic"), cols_remove = FALSE) |> 
+  mutate(across(c(bp_systolic, bp_diastolic), as.numeric)) 
+```
+
+### Revisión
+
+::: columns
+::: {.column width="50%"}
+```{r}
+df_clean |> 
+  select(start_bp, bp_systolic, bp_diastolic) |> 
+  glimpse()
+```
+
+<br>
+
+::: fragment
+```{r, error=TRUE}
+mean(df_clean[["bp_systolic"]], na.rm = TRUE)
+mean(df_clean[["bp_diastolic"]], na.rm = TRUE)
+```
+:::
+:::
+
+::: {.column width="50%"}
+::: fragment
+```{r}
+df_clean[["bp_systolic"]]
+df_clean[["bp_diastolic"]]
+```
+:::
+:::
+:::
+:::
