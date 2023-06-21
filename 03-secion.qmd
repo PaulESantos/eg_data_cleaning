@@ -21,7 +21,7 @@ library(emo)
 ## ¿Dónde estamos ahora?
 
 \
-- Realizamos la limpieza de la Etapa 1: limpiamos los nombres de las variables, eliminamos columnas/filas vacías, corregimos los tipos/clases de variables (caracteres a numéricos, recodificación de factores, Problemaas con fechas), abordamos los valores faltantes y las violaciones de los principios de datos ordenados (separación).
+- Realizamos la limpieza de la Etapa 1: limpiamos los nombres de las variables, eliminamos columnas/filas vacías, corregimos los tipos/clases de variables (caracteres a numéricos, recodificación de factores, Problemas con fechas), abordamos los valores faltantes y las violaciones de los principios de datos ordenados (separación).
 
 - Si bien la Etapa 1 es necesaria en casi todos los proyectos, a menudo es necesario realizar la limpieza de datos de la Etapa 2, pero no en todos los proyectos.
 
@@ -37,7 +37,7 @@ library(emo)
 Formato Ancho
 
 ```{r, echo=FALSE}
-wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 3, skip = 6) |>
+wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 2, skip = 6) |>
   janitor::clean_names() |>
   janitor::remove_empty(which = c("rows", "cols")) |> 
   select(pat_id, treatment, ends_with("mes"), ends_with("bss"), ends_with("emo")) |> 
@@ -59,11 +59,11 @@ wide |>
 
 ## La Unidad de Análisis - Formato ancho
 
-- Es posible que deseemos realizar un análisis por paciente, ya que cada paciente puede (o no) tener el Resultadoado. Si tenemos múltiples observaciones o puntos de datos en cada paciente,esto se puede almacenar en formato ancho, con una fila por paciente.
+- Es posible que deseemos realizar un análisis por paciente, ya que cada paciente puede (o no) tener el Resultado. Si tenemos múltiples observaciones o puntos de datos en cada paciente,esto se puede almacenar en formato ancho, con una fila por paciente.
 
 
 ```{r,  echo=FALSE, warning=FALSE, message=FALSE}
-wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 3, skip = 6) |>
+wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 2, skip = 6) |>
   janitor::clean_names() |>
   janitor::remove_empty(which = c("rows", "cols")) |>
   select(pat_id, treatment, ends_with("mes"), ends_with("bss"), ends_with("emo")) |>
@@ -74,8 +74,8 @@ head(wide)
 
 ## La Unidad de Análisis - Formato largo
 
-- A menudo nos interesa el cambio en un Resultadoado a lo largo del tiempo.
-- Para que esto funcione, necesitamos una fila por cada medición del Resultadoado. Esto genera datos en formato largo, con múltiples visitas y mediciones para cada paciente.
+- A menudo nos interesa el cambio en un Resultado a lo largo del tiempo.
+- Para que esto funcione, necesitamos una fila por cada medición del Resultado. Esto genera datos en formato largo, con múltiples visitas y mediciones para cada paciente.
 
 
 ```{r, echo=FALSE}
@@ -123,7 +123,7 @@ wide |>
 ### Formato ancho
 
 ```{r,  echo=FALSE, warning=FALSE, message=FALSE}
-wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 3, skip = 6) |>
+wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 2, skip = 6) |>
   janitor::clean_names() |>
   janitor::remove_empty(which = c("rows", "cols")) |>
   select(pat_id, treatment, ends_with("mes"), ends_with("bss"), ends_with("emo")) |>
@@ -180,7 +180,7 @@ wide |>
 Comencemos con la versión de en formato ancho(columnas seleccionadas de `messy_uc`)
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 3, skip = 6) |>
+wide <- readxl::read_excel(here("data/messy_uc.xlsx"), sheet = 2, skip = 6) |>
   janitor::clean_names() |>
   janitor::remove_empty(which = c("rows", "cols")) |>
   select(pat_id, treatment, ends_with("mes"), ends_with("bss"), ends_with("emo")) |>
@@ -306,9 +306,7 @@ wide |>
                names_to = c("timept", "measure"),
                names_sep = "_",
                values_to = "score")
-
 ```
-
 :::
 
 ::: {.column width="50%"}
@@ -321,7 +319,6 @@ wide |>
 
 ```
 :::
-
 :::
 :::
 
@@ -350,7 +347,9 @@ tall
 :::
 :::
 :::
+
 ## Pivoteo hacia un formato ancho
+
 
 ```{r echo=TRUE, eval=FALSE}
 
@@ -373,8 +372,6 @@ tall |>
   )
 ```
 
-:::
-
 ## Datos longitudinales
 
 ::: columns
@@ -387,7 +384,7 @@ tall |>
 - El paquete {padr} puede ayudar con estos problemas.
 
 :::
-  ::: {.column width="40%"}
+::: {.column width="40%"}
 ![Datos longitudinales](images/long_data.png)
 :::
 :::
@@ -437,7 +434,7 @@ emergency |>
   head()
 ```
 
-###  Organizando por mes
+###  Por mes
 -   Vamos a agrupar por mes
 
 ```{r}
@@ -449,7 +446,7 @@ emergency |>
   select(-lat, -lng, -zip)
 ```
 
-### Organizando por semana
+### Por semana
 -   Vamos a agrupar por semana
 
 ```{r}

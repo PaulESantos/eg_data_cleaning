@@ -1,13 +1,13 @@
 /*-- scss:defaults --*/
 
-// fonts Nunito Sans Atkinson Hyperlegible
+// fonts
 @import 'https://fonts.googleapis.com/css2?family=Fira+Code&display=swap';
 
 $font-family-sans-serif: "Fira Code", sans-serif;
 $presentation-heading-color: #7090A5;
 $presentation-title-slide-text-align: "left";
-$presentation-font-size-root: 28px;
-$code-block-font-size: 0.6em;
+$presentation-font-size-root: 26px;
+$code-block-font-size: 0.5em;
 $link-color: #7090A5;
 $custom-col: #E67E3A;
 
@@ -73,7 +73,7 @@ details>summary {
   margin-top: 0.5em;
   padding: 0.25em;
   background: #F3F7FB;
-  font-size: 0.75em;
+  font-size: 0.60em;
 }
 
 .reveal .slide .share {
